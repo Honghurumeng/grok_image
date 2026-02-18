@@ -1,0 +1,320 @@
+.app {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h2 {
+  font-size: 1.5rem;
+  color: #34495e;
+  margin: 0;
+}
+
+.config-section {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s;
+}
+
+.config-header:hover {
+  background: #f8f9fa;
+}
+
+.config-toggle {
+  font-size: 1.2rem;
+  color: #666;
+  transition: transform 0.3s;
+}
+
+.config-content {
+  padding: 0 2rem 2rem 2rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.generate-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.form-group textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.generate-btn {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.generate-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background: #fee;
+  color: #c33;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border-left: 4px solid #c33;
+}
+
+.history-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.clear-btn {
+  padding: 0.5rem 1rem;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.clear-btn:hover {
+  background: #c0392b;
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.history-card {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.history-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.history-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.history-card img:hover {
+  opacity: 0.9;
+}
+
+.history-info {
+  padding: 1rem;
+  background: white;
+}
+
+.history-prompt {
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.history-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.history-time {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.history-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.use-prompt-btn {
+  padding: 0.25rem 0.75rem;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.use-prompt-btn:hover {
+  background: #229954;
+}
+
+.download-btn {
+  padding: 0.25rem 0.75rem;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.download-btn:hover {
+  background: #2980b9;
+}
+
+.delete-btn {
+  padding: 0.25rem 0.75rem;
+  background: #95a5a6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.delete-btn:hover {
+  background: #7f8c8d;
+}
+
+.preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.preview-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  cursor: default;
+}
+
+.preview-content img {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  display: block;
+}
+
+.preview-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+.preview-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
