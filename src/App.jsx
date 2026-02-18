@@ -96,17 +96,24 @@ function App() {
       const decoder = new TextDecoder()
       const imageMap = new Map()
       let finalImage = null
+      let buffer = '' // 用于存储不完整的数据
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
 
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n').filter(line => line.trim().startsWith('data:'))
+        // 将新数据追加到缓冲区
+        buffer += decoder.decode(value, { stream: true })
+
+        // 按行分割,保留最后一个可能不完整的行
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || '' // 保存最后一个可能不完整的行
 
         for (const line of lines) {
-          const data = line.replace(/^data:\s*/, '')
-          if (data === '[DONE]') continue
+          if (!line.trim().startsWith('data:')) continue
+
+          const data = line.replace(/^data:\s*/, '').trim()
+          if (data === '[DONE]' || data === '') continue
 
           try {
             const json = JSON.parse(data)
