@@ -98,10 +98,22 @@ h2 {
   font-family: inherit;
 }
 
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
 .generate-btn {
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #16a34a;
   color: white;
   border: none;
   border-radius: 8px;
@@ -112,8 +124,9 @@ h2 {
 }
 
 .generate-btn:hover:not(:disabled) {
+  background: #15803d;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
 }
 
 .generate-btn:disabled {

@@ -62,6 +62,15 @@ export const getImageFromCache = async (url) => {
   }
 }
 
+// 仅从缓存获取（不请求网络）
+export const getImageFromCacheOnly = async (url) => {
+  const cachedBlob = await getImageFromCache(url)
+  if (cachedBlob) {
+    return URL.createObjectURL(cachedBlob)
+  }
+  return null
+}
+
 // 获取图片（优先从缓存，否则从网络）
 export const getImage = async (url) => {
   // 先尝试从缓存获取

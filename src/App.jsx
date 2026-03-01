@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import { getImage } from './imageCache'
+import { getImage, getImageFromCacheOnly } from './imageCache'
 
 function App() {
   const [config, setConfig] = useState({
@@ -20,6 +20,7 @@ function App() {
   const [previewImage, setPreviewImage] = useState(null)
   const [cachedImages, setCachedImages] = useState({})
   const [configExpanded, setConfigExpanded] = useState(false)
+  const [loadFromNetwork, setLoadFromNetwork] = useState(true)
 
   useEffect(() => {
     localStorage.setItem('apiUrl', config.url)
@@ -36,19 +37,26 @@ function App() {
     const loadCachedImages = async () => {
       const urls = [
         ...images.map(img => img.url),
-        ...history.map(item => item.image.url)
+        ...history.map(item => item.image?.url).filter(Boolean)
       ]
 
       for (const url of urls) {
         if (!cachedImages[url]) {
-          const cachedUrl = await getImage(url)
-          setCachedImages(prev => ({ ...prev, [url]: cachedUrl }))
+          // 先尝试仅从缓存获取
+          const cachedUrl = await getImageFromCacheOnly(url)
+          if (cachedUrl) {
+            setCachedImages(prev => ({ ...prev, [url]: cachedUrl }))
+          } else if (loadFromNetwork) {
+            // 缓存中没有且允许网络请求，从网络获取
+            const networkUrl = await getImage(url)
+            setCachedImages(prev => ({ ...prev, [url]: networkUrl }))
+          }
         }
       }
     }
 
     loadCachedImages()
-  }, [images, history])
+  }, [images, history, loadFromNetwork])
 
   const getCachedImageUrl = (url) => {
     return cachedImages[url] || url
@@ -94,20 +102,16 @@ function App() {
 
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
-      const imageMap = new Map()
-      let finalImage = null
-      let buffer = '' // 用于存储不完整的数据
+      let buffer = ''
+      const imageUrls = []
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
 
-        // 将新数据追加到缓冲区
         buffer += decoder.decode(value, { stream: true })
-
-        // 按行分割,保留最后一个可能不完整的行
         const lines = buffer.split('\n')
-        buffer = lines.pop() || '' // 保存最后一个可能不完整的行
+        buffer = lines.pop() || ''
 
         for (const line of lines) {
           if (!line.trim().startsWith('data:')) continue
@@ -117,39 +121,44 @@ function App() {
 
           try {
             const json = JSON.parse(data)
-
-            if (json.type === 'image_generation.partial_image') {
-              const key = `${json.image_id}-${json.stage}`
-              imageMap.set(key, {
-                url: json.url,
-                stage: json.stage,
-                index: json.index,
-                created_at: json.created_at
-              })
-
-              setImages(Array.from(imageMap.values()).sort((a, b) => a.index - b.index))
-            } else if (json.type === 'image_generation.completed') {
-              finalImage = {
-                url: json.url,
-                stage: json.stage,
-                index: json.index,
-                created_at: json.created_at
+            const content = json.choices?.[0]?.delta?.content || ''
+            
+            // 从 content 中提取图片 URL（只保留 final 图片）
+            const imageRegex = /!\[.*?\]\((https?:\/\/[^\s\)]+)\)/g
+            let match
+            while ((match = imageRegex.exec(content)) !== null) {
+              const url = match[1]
+              if (url.includes('-final') && !imageUrls.includes(url)) {
+                imageUrls.push(url)
               }
             }
           } catch (e) {
-            console.error('解析响应失败:', e)
+            // 忽略解析错误
           }
         }
       }
 
-      if (finalImage) {
+      if (imageUrls.length > 0) {
+        const now = Date.now()
+        const newImages = imageUrls.map((url, index) => ({
+          url,
+          stage: 'completed',
+          index,
+          created_at: new Date().toISOString()
+        }))
+        
+        setImages(newImages)
+        
+        // 保存第一张图片到历史
         const historyItem = {
-          id: Date.now(),
+          id: now,
           prompt: prompt,
-          image: finalImage,
+          image: newImages[0],
           timestamp: new Date().toISOString()
         }
         setHistory(prev => [historyItem, ...prev])
+      } else {
+        setError('未找到生成的图片')
       }
     } catch (err) {
       setError(err.message)
@@ -224,6 +233,17 @@ function App() {
                   onChange={(e) => setConfig({...config, model: e.target.value})}
                 />
               </div>
+
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={loadFromNetwork}
+                    onChange={(e) => setLoadFromNetwork(e.target.checked)}
+                  />
+                  从网络加载未缓存的图片
+                </label>
+              </div>
             </div>
           )}
         </div>
@@ -263,7 +283,7 @@ function App() {
               </button>
             </div>
             <div className="history-grid">
-              {history.map((item) => (
+              {history.filter(item => item.image?.url).map((item) => (
                 <div key={item.id} className="history-card">
                   <img
                     src={getCachedImageUrl(item.image.url)}
